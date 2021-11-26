@@ -1,13 +1,21 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  HttpStatus,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { InvestigationsService } from './investigations.service';
-import { Investigation } from './investigation.entity';
 
 @Controller('investigations')
 export class InvestigationsController {
   constructor(private readonly investigationsService: InvestigationsService) {}
 
   @Post()
-  async create(@Body() investigation: Partial<Investigation>) {
-    await this.investigationsService.create(new Investigation(investigation));
+  @UseInterceptors(FileInterceptor('file'))
+  async upload(@UploadedFile('file') file: any) {
+    await this.investigationsService.upload(file);
+    return { statusCode: HttpStatus.CREATED, message: 'Success' };
   }
 }

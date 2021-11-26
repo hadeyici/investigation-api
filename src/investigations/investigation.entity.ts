@@ -1,16 +1,11 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, ObjectIdColumn, Column, CreateDateColumn } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { EVENT_TYPE } from './enum';
 
 @Entity('investigations')
 export class Investigation {
-  @PrimaryGeneratedColumn('uuid')
-  public id!: string;
+  @ObjectIdColumn()
+  public id: number;
 
   @Column({ nullable: true })
   public userName: string;
@@ -27,10 +22,10 @@ export class Investigation {
   public deviceName: string;
 
   @Column({ nullable: false })
-  public tags: string[];
+  public tags: any;
 
-  @Column({ nullable: false })
-  public data: object[];
+  @Column({ type: 'simple-json', nullable: false })
+  public data: any;
 
   @CreateDateColumn({ type: 'timestamptz' })
   public date: Date;

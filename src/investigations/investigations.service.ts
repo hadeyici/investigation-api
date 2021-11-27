@@ -5,6 +5,7 @@ import { Investigation } from './investigation.entity';
 import { Readable } from 'stream';
 import * as csv from 'csv-parser';
 import { EVENT_TYPE } from './enum';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class InvestigationsService {
@@ -18,6 +19,7 @@ export class InvestigationsService {
 
     try {
       const readable = new Readable();
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       readable._read = () => {};
       readable.push(file.buffer);
       readable
@@ -46,6 +48,85 @@ export class InvestigationsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async getInvestigations(params: {
+    startDate: string;
+    endDate: string;
+    eventType?: EVENT_TYPE;
+    deviceName?: string;
+    userName?: string;
+    data?: string;
+    tags?: string;
+    page: number;
+    size: number;
+  }): Promise<{ data: Investigation[]; total: number; hasNext: boolean }> {
+    if (!params.startDate || !params.endDate) {
+      throw new HttpException(
+        'startDate and endDate must be sent',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!params.page) {
+      params.page = 0;
+    }
+    if (!params.size) {
+      params.size = 20;
+    }
+
+    let where: any = {
+      date: {
+        $gte: dayjs(params.startDate).toDate(),
+        $lte: dayjs(params.startDate).toDate(),
+      },
+    };
+
+    if (params.eventType) {
+      where = {
+        ...where,
+        eventType: params.eventType,
+      };
+    }
+    if (params.deviceName) {
+      where = {
+        ...where,
+        deviceName: params.deviceName,
+      };
+    }
+    if (params.userName) {
+      where = {
+        ...where,
+        userName: params.userName,
+      };
+    }
+    if (params.tags) {
+      where = {
+        ...where,
+        tags: JSON.parse(params.tags),
+      };
+    }
+    if (params.data) {
+      where = {
+        ...where,
+        data: { $all: [params.data] },
+      };
+    }
+
+    const [data, total] = await this.investigationRepository.findAndCount({
+      where,
+      take: params.size,
+      skip: params.page * params.size,
+      order: {
+        date: -1,
+      },
+    });
+
+    return {
+      data,
+      total,
+      hasNext: (params.page + 1) * params.size < total,
+    };
   }
 
   async checkfile(file: any) {

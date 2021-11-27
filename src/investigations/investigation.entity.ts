@@ -1,8 +1,15 @@
-import { Entity, ObjectIdColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  ObjectIdColumn,
+  Column,
+  CreateDateColumn,
+  Index,
+} from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { EVENT_TYPE } from './enum';
 
 @Entity('investigations')
+@Index(['date', 'eventType', 'deviceName'])
 export class Investigation {
   @ObjectIdColumn()
   public id: number;

@@ -24,18 +24,31 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Rest API to import and query investigation data with NestJs, MongoDB, TypeORM, and TypeScript.
 
 ## Installation
 
+Install `nodejs` and `mongodb` in your machine.
+
 ```bash
+# 1. Clone the repository.
+$ git clone https://github.com/hadeyici/investigation-api.git
+
+# 2. Enter your newly-cloned folder.
+$ cd investigation-api
+
+# 3. Install dependencies.
 $ npm install
 ```
+
+## Configuration
+
+Create .env file cp .env.example .env and replace existing env variables (mongodb connection params)
 
 ## Running the app
 
 ```bash
-# development
+# Run development server and open http://localhost:3000
 $ npm run start
 
 # watch mode
@@ -48,26 +61,103 @@ $ npm run start:prod
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
 $ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
+## API
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Server will listen on port `3000`, and it expose the following APIs:
 
-## Stay in touch
+- **POST** - `/investigations` - Upload a new csv file | keys in csv file;
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  - **eventType** - _string ('fileCreated', 'fileAccessed', 'fileDownloaded', 'eventRecordCreated' or 'fileExecuted')_
+  - **deviceName** - _string_
+  - **tags** - _string[]_
+  - **data** - _object[]_
+  - **userName** - _string (optional)_
 
-## License
+- **GET** - `/investigations` - Returns investigations | search params;
+  - **startDate** - _string_
+  - **endDate** - _string_
+  - **eventType** - _(optional)_
+  - **deviceName** - _(optional)_
+  - **tags** - _(optional)_
+  - **data** - _(optional)_
+  - **userName** - _(optional)_
 
-Nest is [MIT licensed](LICENSE).
+## Request and Responses
+
+`POST /investigations` upload csv file
+
+- Request
+
+Example csv file: example.csv;
+
+```
+"userName"|"eventType"|"deviceName"|"tags"|"data"
+"Helen"|"eventRecordCreated"|"mobile"|["ca","english"]|[{"job":{"name":"student","sallary":null},"favorite":"Twitter"}]
+"Kane"|"fileCreated"|"mobile"|["faketon","ma"]|[{"job":{"name":"worker","sallary":"2 thousand"},"favorite":"Facebook"}]
+"Parker"|"fileDownloaded"|"mobile"|["france","fr"]|[{"favorite":"Instagram"}]
+"Clara"|"fileExecuted"|"pc"|["english","faketon"]|[{"favorite":"Instagram","married":true}]
+"Adan"|"fileDownloaded"|"pc"|["group","ca"]|[{"job":{"name":"engineer","sallary":null},"married":false}]
+"Mila"|"fileAccessed"|"pc"|["city","fr"]|[{"job":{"name":"teacher","sallary":"4 thousand"},"favorite":"Facebook"}]
+"Leon"|"eventRecordCreated"|"pc"|["vancouver","faketon"]|[{"job":{"name":"farmer","sallary":null},"favorite":"Instagram","married":true}]
+```
+
+- Response
+
+```
+{
+statusCode: HTTP Status Code,
+"msg": Success / Error Message,
+}
+```
+
+`GET /investigations` returns investigations
+
+- Request
+
+```
+`GET /investigations?startDate=2021-11-25&endDate=2021-11-27&eventType=eventRecordCreated&deviceName=pc&userName=Leon&tags=["vancouver","faketon"]&data=mer`
+```
+
+- Response
+
+```
+{
+  "data": [
+    {
+      "id": "61a1032755e63a7150ac905c",
+      "userName": "Leon",
+      "eventType": "eventRecordCreated",
+      "deviceName": "pc",
+      "tags": [
+        "vancouver",
+        "faketon"
+      ],
+      "data": [
+        {
+          "job": {
+            "name": "farmer",
+            "sallary": null
+          },
+          "favorite": "Instagram",
+          "married": true
+        }
+      ],
+      "date": "2021-11-26T15:54:15.209Z"
+    }
+  ],
+  "total": 1,
+  "hasNext": false
+}
+
+or
+
+{
+  "data": [],
+  "total": 0,
+  "hasNext": false
+}
+```

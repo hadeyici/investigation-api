@@ -1,0 +1,8 @@
+"userName"|"eventType"|"deviceName"|"tags"|"data"
+"Helen"|"eventRecordCreated"|"mobile"|["ca","english"]|[{"job":{"name":"student","sallary":null},"favorite":"Twitter"}]
+"Kane"|"fileCreated"|"mobile"|["faketon","ma"]|[{"job":{"name":"worker","sallary":"2 thousand"},"favorite":"Facebook"}]
+"Parker"|"fileDownloaded"|"mobile"|["france","fr"]|[{"favorite":"Instagram"}]
+"Clara"|"fileExecuted"|"pc"|["english","faketon"]|[{"favorite":"Instagram","married":true}]
+"Adan"|"fileDownloaded"|"pc"|["group","ca"]|[{"job":{"name":"engineer","sallary":null},"married":false}]
+"Mila"|"fileAccessed"|"pc"|["city","fr"]|[{"job":{"name":"teacher","sallary":"4 thousand"},"favorite":"Facebook"}]
+"Leon"|"eventRecordCreated"|"pc"|["vancouver","faketon"]|[{"job":{"name":"farmer","sallary":null},"favorite":"Instagram","married":true}]

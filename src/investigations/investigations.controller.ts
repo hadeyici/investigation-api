@@ -6,6 +6,8 @@ import {
   UploadedFile,
   HttpStatus,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InvestigationsService } from './investigations.service';
@@ -24,6 +26,7 @@ export class InvestigationsController {
   }
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
   async getAll(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,

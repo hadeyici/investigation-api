@@ -26,13 +26,13 @@ export class InvestigationsService {
         .pipe(csv({ separator: '|' }))
         .on('data', async (data: any) => {
           await this.checkData(data);
-
+          const arr = data.tags.split('|');
           const createdData = await this.investigationRepository.create({
             userName: data.userName,
             eventType: data.eventType,
             deviceName: data.deviceName,
-            tags: data.tags,
-            data: data.data,
+            tags: arr[0],
+            data: arr[1],
             date: new Date().getTime(),
           });
           createdData.tags = JSON.parse(createdData.tags);
@@ -78,7 +78,7 @@ export class InvestigationsService {
     let where: any = {
       date: {
         $gte: dayjs(params.startDate).toDate(),
-        $lte: dayjs(params.startDate).toDate(),
+        $lte: dayjs(params.endDate).toDate(),
       },
     };
 
@@ -109,7 +109,7 @@ export class InvestigationsService {
     if (params.data) {
       where = {
         ...where,
-        data: { $all: [params.data] },
+        data: { $nin: [params.data] },
       };
     }
 
